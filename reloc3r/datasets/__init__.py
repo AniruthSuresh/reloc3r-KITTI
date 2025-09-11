@@ -10,6 +10,7 @@ from .blendedmvs import BlendedMVS
 from .megadepth import MegaDepth
 from .dl3dv import DL3DV
 from .realestate10k import RealEstate 
+from .kitti import KITTI
 
 # datasets for evaluation 
 from .scannet1500 import ScanNet1500
