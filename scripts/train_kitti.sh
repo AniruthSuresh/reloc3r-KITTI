@@ -1,27 +1,15 @@
 #!/bin/bash
 # Training Reloc3r on KITTI dataset using a single GPU (3090)
 
-#python train.py \
-#     --train_dataset "1000 @ KITTI(split='train', resolution=[(512, 384), (512, 336), (512, 288)], transform=ColorJitter)" \
-#     --test_dataset "200 @ KITTI(resolution=(512, 384), seed=777)" \
-#     --model "Reloc3rRelpose(img_size=512)" \
-#     --lr 1e-5 --warmup_epochs 0 --epochs 100 --batch_size 8 --accum_iter 1 \
-#     --save_freq 10 --keep_freq 10 --eval_freq 1 \
-#     --freeze_encoder \
-#     --output_dir "checkpoints/_kitti-only_" \
-#     --pretrained "checkpoints/DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth"
-
-# Uses 2 GPU's 
-
-torchrun --nproc_per_node=2 train.py \
+python train.py \
      --train_dataset "1000 @ KITTI(split='train', resolution=[(512, 384), (512, 336), (512, 288)], transform=ColorJitter)" \
      --test_dataset "200 @ KITTI(resolution=(512, 384), seed=777)" \
      --model "Reloc3rRelpose(img_size=512)" \
      --lr 1e-5 --warmup_epochs 0 --epochs 100 --batch_size 8 --accum_iter 1 \
      --save_freq 10 --keep_freq 10 --eval_freq 1 \
-     --output_dir "checkpoints/_kitti-only_2gpu_" \
-     --pretrained "checkpoints/DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth"
-
+     --freeze_encoder \
+     --output_dir "checkpoints/_kitti-only_" \
+     --pretrained "checkpoints/DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth" \
 
 #!/bin/bash
 #export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
