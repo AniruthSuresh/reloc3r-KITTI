@@ -163,16 +163,53 @@ class Reloc3rRelpose(nn.Module, PyTorchModelHubMixin):
         return pose1, pose2
 
 
-def setup_reloc3r_relpose_model(model_args, device):
+# def setup_reloc3r_relpose_model(model_args, device):
+#     if '224' in model_args:
+#         ckpt_path = 'siyan824/reloc3r-224'
+#     elif '512' in model_args:
+#         # ckpt_path = 'siyan824/reloc3r-512'
+#         ckpt_path = '../checkpoints/kitti-ckp/checkpoint-best.pth'  # local path for KITTI-trained model
+#     reloc3r_relpose = Reloc3rRelpose.from_pretrained(ckpt_path)
+#     reloc3r_relpose.to(device)
+#     reloc3r_relpose.eval()
+#     print('Model loaded from ', ckpt_path)
+#     return reloc3r_relpose
+
+
+def setup_reloc3r_relpose_model(model_args, device, ckpt_path=None):
+    # pick base model size
     if '224' in model_args:
-        ckpt_path = 'siyan824/reloc3r-224'
-    elif '512' in model_args:
-        ckpt_path = 'siyan824/reloc3r-512'
-    reloc3r_relpose = Reloc3rRelpose.from_pretrained(ckpt_path)
+        base_repo = 'siyan824/reloc3r-224'
+    else:
+        base_repo = 'siyan824/reloc3r-512'
+
+    print(f"Initializing Reloc3r base model {base_repo}")
+    model = Reloc3rRelpose.from_pretrained(base_repo)
+
+    # if checkpoint path is given, load local weights
+    if ckpt_path is not None and os.path.exists(ckpt_path):
+        print(f"Loading local checkpoint: {ckpt_path}")
+        ckpt = torch.load(ckpt_path, map_location=device)
+        if "model" in ckpt:  # if saved as dict with key "model"
+            ckpt = ckpt["model"]
+        model.load_state_dict(ckpt, strict=False)
+
+    model.to(device)
+    model.eval()
+    return model
+
+
+
+
+def setup_reloc3r_relpose_model_local(ckpt_path, device):
+    reloc3r_relpose = Reloc3rRelpose()  # init model with default args
+    state_dict = torch.load(ckpt_path, map_location=device)
+    reloc3r_relpose.load_state_dict(state_dict)
     reloc3r_relpose.to(device)
     reloc3r_relpose.eval()
-    print('Model loaded from ', ckpt_path)
+    print('Model loaded from local checkpoint:', ckpt_path)
     return reloc3r_relpose
+
 
 
 @torch.no_grad()
