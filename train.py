@@ -26,6 +26,8 @@ import croco.utils.misc as misc  # noqa
 from croco.utils.misc import NativeScalerWithGradNormCount as NativeScaler  # noqa
 
 from pdb import set_trace as bb
+import wandb
+
 
 
 def get_args_parser():
@@ -204,6 +206,15 @@ def main(args):
     else:
         log_writer = None
 
+    if global_rank == 0:
+        wandb.init(
+            project="reloc3r",  # change to your project name
+            config=vars(args),
+            name=f"reloc3r_run_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        )
+    else:
+        wandb.init(mode="disabled")  # avoid multiple processes writing
+
     print(f"Start training for {args.epochs} epochs")
     start_time = time.time()
     train_stats = test_stats = {}
@@ -342,12 +353,22 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
             """ We use epoch_1000x as the x-axis in tensorboard.
             This calibrates different curves when batch size changes.
             """
+            
             epoch_1000x = int(epoch_f * 1000)
+            step = int(epoch_f * 1000)  
             log_writer.add_scalar('train_loss', loss_value_reduce, epoch_1000x)
             log_writer.add_scalar('train_lr', lr, epoch_1000x)
             log_writer.add_scalar('train_iter', epoch_1000x, epoch_1000x)
             for name, val in loss_details.items():
                 log_writer.add_scalar('train_'+name, val, epoch_1000x)
+            
+            wandb.log({
+                "train/loss": loss_value_reduce,
+                "train/lr": lr,
+                **{f"train/{name}": val for name, val in loss_details.items()},
+                "epoch": epoch
+            }, step=step)
+                
 
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
@@ -390,6 +411,11 @@ def test_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
         for name, val in results.items():
             log_writer.add_scalar(prefix+'_'+name, val, 1000*epoch)
 
+    wandb.log({
+        **{f"{prefix}/{name}": val for name, val in results.items()},
+        "epoch": epoch
+    }, step=1000*epoch)
+    
     return results
 
 
