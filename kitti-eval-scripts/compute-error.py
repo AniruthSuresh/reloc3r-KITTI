@@ -22,6 +22,7 @@ gt_poses = load_gt_poses(gt_file)
 print(f"Loaded {len(gt_poses)} ground truth relative poses from {gt_file}")
 
 
+
 def load_pred_pose(file_path):
     with open(file_path, 'r') as f:
         lines = f.readlines()
