@@ -110,3 +110,4 @@ for i, fname in enumerate(pred_files):
 #     print(f"Frame {i} → {i+1}: Trans Error = {trans_err:.6f}, Rot Error = {rot_deg:.6f} deg")
 
     print(f"Frame {i} → {i+1}: Trans Error = {trans_err:.6f}, Rot Error = {rot_err:.6f} deg")
+

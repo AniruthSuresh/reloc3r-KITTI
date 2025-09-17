@@ -11,6 +11,7 @@ from .megadepth import MegaDepth
 from .dl3dv import DL3DV
 from .realestate10k import RealEstate 
 from .kitti import KITTI
+from .kitti_specific_seq import KITTI_specific_seq
 
 # datasets for evaluation 
 from .scannet1500 import ScanNet1500
