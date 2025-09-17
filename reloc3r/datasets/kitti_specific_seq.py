@@ -4,7 +4,7 @@ from reloc3r.datasets.base.base_stereo_view_dataset import BaseStereoViewDataset
 from reloc3r.utils.image import imread_cv2, cv2
 
 
-DATA_ROOT = "/home/aniruth/Desktop/Courses/Independent - Study/reloc3r-KITTI/data/2011-09-26-KITTI/"
+DATA_ROOT = "/home2/aniruth.suresh/reloc3r-KITTI/data/2011-09-26-KITTI/"
 
 class KITTI_specific_seq(BaseStereoViewDataset):
 
